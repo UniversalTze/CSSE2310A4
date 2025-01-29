@@ -43,4 +43,11 @@ Upon sending a command to the server, crackclient shall wait for a single line r
 - Response ":invalid" → emit the text: **"Error in command"** to stdout.
 • Response ":failed" → emit the text: **"Unable to decrypt"** to stdout.
 • Otherwise, the raw output received from the server shall be output to stdout.
-(Photos of behaviour will be posted down below). (link it here). 
+(Photos of behaviour will be posted down below). (link it here).
+
+## CrackServer
+Crackserver is a networked, multithreaded password cracking server, allowing clients to connect and provide encrypted ciphertext for cracking, and also allows clients to provide plaintext passwords for encrypting. All communication between clients and the server is over TCP.
+## Parameters
+Your crackserver program is to accept command line arguments as follows: **./crackserver [--maxconn connections] [--port portnum] [--dictionary filename]**
+Program accepts up to three optional arguments (with associated values) – (any order). The connections argument, if specified, indicates the maximum number of simultaneous client connections to be permitted. If this is zero or missing, then there is no limit to how many clients may connect (be reasoanble). The portnum argument, if specified, indicates which localhost port crackserver is to listen on. If the port number is absent or zero, then crackserver is to use an ephemeral port. The dictionary filename argument, if specified, indicates the path to a plain text file containing one word or string per line, which represents the dictionary that crackserver will search when attempting to crack passwords. If not specified, crackserver shall use the system dictionary file /usr/share/dict/words.
+### Behaviour: 
