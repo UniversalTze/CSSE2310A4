@@ -24,3 +24,23 @@ The return value from crypt() is a pointer to a static buffer, so the caller mus
   - plaintext "foobar", salt "AA" → ciphertext "AAZk9Aj5/Ue0E"
   - plaintext "dinosaur", salt "0z" → ciphertext "0zD1fV.Yez8RI"
 he crypt() family of functions is declared in <crypt.h>, and you will need to link your crackserver with the -lcrypt argument to use them in your programs.
+
+## CrackClient Parameters
+Crackclient program is to accept command line arguments as follows: **./crackclient portnum [jobfile]**. 
+
+- The mandatory portnum argument indicates which localhost port crackserver is listening on – either numerical or the name of a service. The optional jobfile argument specifies the name of a file to be used as input commands. If not specified, then crackclient is to read input from stdin.
+### Behaviour (Early Exits)
+- If an incorrect number of command line arguments are provided then crackclient should emit the following message: **"Usage: crackclient portnum [jobfile]"** (terminated by a newline) to stderr and exit with status 1.
+- If a job file is specified, and crackclient is unable to open it for reading, crackclient shall emit the following message **"crackclient: unable to open job file "jobfile""** (terminated by newline) to stderr and exit with status 2. Jobfile is replaced by the name of the specified file. Note that the file name is enclosed in double quote 102 characters.
+- If crackclient is unable to connect to the server on the specified port (or service name) of localhost, it shall emit the following message: **"crackclient: unable to connect to port N"** (terminated by a newline) to stderr and exit with status 3. N should be replaced by the argument given on the command line. (may be a non-numerical string.).
+### Behaviour (Runtime)
+- connect to the server on the specified port number (or service name)
+- read commands either from the jobfile, or stdin, and processes them.
+- when EOF is received on the input stream (job file or stdin), crackclient shall close any open network connections, and terminate with exit status 0.
+- If the network connection to the server is closed (e.g. crackclient detects EOF on the socket), then crackclient shall emit the following message: **"crackclient: server connection terminated"** to stderr and terminate with exit status 4. 
+
+Upon sending a command to the server, crackclient shall wait for a single line reply, and interpret it as follows: 
+- Response ":invalid" → emit the text: **"Error in command"** to stdout.
+• Response ":failed" → emit the text: **"Unable to decrypt"** to stdout.
+• Otherwise, the raw output received from the server shall be output to stdout.
+(Photos of behaviour will be posted down below). (link it here). 
