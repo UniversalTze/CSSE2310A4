@@ -1,0 +1,542 @@
+URL to view log online:
+https://source.eait.uq.edu.au/viewvc/csse2310-sem1-s4703754/trunk/a4/?view=log
+
+Retrieving logs at Fri May 26 13:37:19 AEST 2023
+------------------------------------------------------------------------
+r1 | uqpsutto | 2023-03-01 20:47:37 +1000 (Wed, 01 Mar 2023) | 1 line
+Changed paths:
+   A /play
+   A /prac
+   A /trunk
+   A /trunk/a1
+   A /trunk/a3
+   A /trunk/a4
+
+Initial repository structure
+
+
+------------------------------------------------------------------------
+r111 | s4703754 | 2023-05-11 15:13:23 +1000 (Thu, 11 May 2023) | 2 lines
+Changed paths:
+   A /trunk/a4/Makefile
+   A /trunk/a4/crackclient.c
+   A /trunk/a4/crackclient.h
+   A /trunk/a4/crackserver.c
+   A /trunk/a4/crackserver.h
+
+Made Makefile so that it will compile both c and h files for crackclient and crackserver. Also linked needed files in h files and added stubs that will be removed in both c files. 
+
+
+Index: Makefile
+ Makefile |   17 +++++++++++++++++
+ 1 file changed, 17 insertions(+)
+Index: crackclient.c
+ crackclient.c |    9 +++++++++
+ 1 file changed, 9 insertions(+)
+Index: crackclient.h
+ crackclient.h |   13 +++++++++++++
+ 1 file changed, 13 insertions(+)
+Index: crackserver.c
+ crackserver.c |    8 ++++++++
+ 1 file changed, 8 insertions(+)
+Index: crackserver.h
+ crackserver.h |   10 ++++++++++
+ 1 file changed, 10 insertions(+)
+
+------------------------------------------------------------------------
+r112 | s4703754 | 2023-05-11 15:56:26 +1000 (Thu, 11 May 2023) | 2 lines
+Changed paths:
+   M /trunk/a4/crackclient.c
+   M /trunk/a4/crackclient.h
+
+Added a check_com_line in crackclient.c to handle incorrect number of command line arguments. Implemented an enum for exit status to stop the use of magic numbers when exiting. Define macros for non optional commands in command line and optional command in command line.
+
+
+Index: crackclient.c
+ crackclient.c |   16 ++++++++++++++--
+ 1 file changed, 14 insertions(+), 2 deletions(-)
+Index: crackclient.h
+ crackclient.h |   10 ++++++++++
+ 1 file changed, 10 insertions(+)
+
+------------------------------------------------------------------------
+r113 | s4703754 | 2023-05-11 17:34:04 +1000 (Thu, 11 May 2023) | 2 lines
+Changed paths:
+   M /trunk/a4/crackclient.c
+   M /trunk/a4/crackclient.h
+
+Modified little bug in crackclient.h with the predefined macros. Also modiifed check_com_line() to handle unreadable or non existent files on the command line.
+
+
+Index: crackclient.c
+ crackclient.c |    9 +++++++++
+ 1 file changed, 9 insertions(+)
+Index: crackclient.h
+ crackclient.h |    6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
+
+------------------------------------------------------------------------
+r114 | s4703754 | 2023-05-12 15:51:25 +1000 (Fri, 12 May 2023) | 2 lines
+Changed paths:
+   M /trunk/a4/crackclient.c
+   M /trunk/a4/crackclient.h
+
+Added connection_err() and process_client() functions. Connection err() is to help process when a connection cannot be established (socket has not been made from server). Process_client is the funtion that will connect and write threads to server. 
+
+
+Index: crackclient.c
+ crackclient.c |   40 +++++++++++++++++++++++++++++++++++++---
+ 1 file changed, 37 insertions(+), 3 deletions(-)
+Index: crackclient.h
+ crackclient.h |   15 +++++++++++++--
+ 1 file changed, 13 insertions(+), 2 deletions(-)
+
+------------------------------------------------------------------------
+r115 | s4703754 | 2023-05-12 18:32:59 +1000 (Fri, 12 May 2023) | 2 lines
+Changed paths:
+   M /trunk/a4/crackclient.c
+   M /trunk/a4/crackclient.h
+
+Added more functionality into process_client to make sure it can send and recieve data from demo-server. Created a write_to_server function that will write to the server that the client is connected to. Also written a read_server() for a thread to read from before the server and then printing the correct message to standard out. 
+
+
+Index: crackclient.c
+ crackclient.c |   93 ++++++++++++++++++++++++++++++++++++++++++++++++++++------
+ 1 file changed, 84 insertions(+), 9 deletions(-)
+Index: crackclient.h
+ crackclient.h |   16 +++++++++++++++-
+ 1 file changed, 15 insertions(+), 1 deletion(-)
+
+------------------------------------------------------------------------
+r116 | s4703754 | 2023-05-14 20:32:39 +1000 (Sun, 14 May 2023) | 2 lines
+Changed paths:
+   M /trunk/a4/crackclient.c
+   M /trunk/a4/crackclient.h
+
+Added a new reader struct that holds the an int variable which is a fd and another one to determine if the reader is still reading. This struct pointer is passed into void thread function. If eof is found on the socket, the reader variable will be set to 0 (false). Added a new function connection_terminated() that handles when communication has been disconnected. This function was called in write_to_server() function if connection between socket has been terminated.
+
+
+Index: crackclient.c
+ crackclient.c |   38 +++++++++++++++++++++++++-------------
+ 1 file changed, 25 insertions(+), 13 deletions(-)
+Index: crackclient.h
+ crackclient.h |   17 +++++++++++++----
+ 1 file changed, 13 insertions(+), 4 deletions(-)
+
+------------------------------------------------------------------------
+r117 | s4703754 | 2023-05-16 12:40:47 +1000 (Tue, 16 May 2023) | 2 lines
+Changed paths:
+   M /trunk/a4/crackclient.c
+   M /trunk/a4/crackserver.c
+   M /trunk/a4/crackserver.h
+
+Fixed dangling pointer in crackclient.c if program exited due to terminated connection. Set up structure for processing command line in crackclient.c and crackclient.h.
+
+
+Index: crackclient.c
+ crackclient.c |    5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
+Index: crackserver.c
+ crackserver.c |   14 ++++++++++++++
+ 1 file changed, 14 insertions(+)
+Index: crackserver.h
+ crackserver.h |   24 ++++++++++++++++++++++++
+ 1 file changed, 24 insertions(+)
+
+------------------------------------------------------------------------
+r118 | s4703754 | 2023-05-16 14:04:09 +1000 (Tue, 16 May 2023) | 2 lines
+Changed paths:
+   M /trunk/a4/crackserver.c
+   M /trunk/a4/crackserver.h
+
+Added a function called check_each_com() which will check if optional args have associated arguments and that no duplicates are assigned. The function will also handle invalid max con and portnum values are entered. 
+
+
+Index: crackserver.c
+ crackserver.c |   49 ++++++++++++++++++++++++++++++++++++++++++++-----
+ 1 file changed, 44 insertions(+), 5 deletions(-)
+Index: crackserver.h
+ crackserver.h |   15 ++++++++++-----
+ 1 file changed, 10 insertions(+), 5 deletions(-)
+
+------------------------------------------------------------------------
+r119 | s4703754 | 2023-05-16 18:16:03 +1000 (Tue, 16 May 2023) | 2 lines
+Changed paths:
+   M /trunk/a4/crackserver.c
+   M /trunk/a4/crackserver.h
+
+Added more predefined and constant variables to reduce the use of magic numbers used in code. Implemented a check_portnum() and check_max_connections() to help check correct arguments are given when these commands are given. These functions are only called in check_each_com(). Also fixed logic in this function. Should now handle all usage errors. 
+
+
+Index: crackserver.c
+ crackserver.c |   53 ++++++++++++++++++++++++++++++++++++++++++++++-------
+ 1 file changed, 46 insertions(+), 7 deletions(-)
+Index: crackserver.h
+ crackserver.h |   18 +++++++++++++++---
+ 1 file changed, 15 insertions(+), 3 deletions(-)
+
+------------------------------------------------------------------------
+r120 | s4703754 | 2023-05-16 22:12:58 +1000 (Tue, 16 May 2023) | 2 lines
+Changed paths:
+   M /trunk/a4/crackserver.c
+   M /trunk/a4/crackserver.h
+
+Added a check_dictionary_file() in both crackclient.c and .h files so program can handle files that cannot be read or does not exits. Time to start parsing the dictionary. 
+
+
+Index: crackserver.c
+ crackserver.c |   68 +++++++++++++++++++++++++++++++++++++++++++++++++++++-----
+ 1 file changed, 63 insertions(+), 5 deletions(-)
+Index: crackserver.h
+ crackserver.h |   18 +++++++++++++++++-
+ 1 file changed, 17 insertions(+), 1 deletion(-)
+
+------------------------------------------------------------------------
+r121 | s4703754 | 2023-05-16 22:40:06 +1000 (Tue, 16 May 2023) | 2 lines
+Changed paths:
+   M /trunk/a4/Makefile
+   M /trunk/a4/crackclient.c
+   D /trunk/a4/crackclient.h
+   M /trunk/a4/crackserver.c
+   D /trunk/a4/crackserver.h
+
+Removing the header files from Makefile. Also deleting header files from svn repo. Moved everything from header files into c files as they have main functions so no header files needed. 
+
+
+Index: crackserver.h (deleted)
+Index: crackclient.h (deleted)
+Index: Makefile
+ Makefile |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+Index: crackclient.c
+ crackclient.c |   44 +++++++++++++++++++++++++++++++++++++++++++-
+ 1 file changed, 43 insertions(+), 1 deletion(-)
+Index: crackserver.c
+ crackserver.c |   57 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++-
+ 1 file changed, 56 insertions(+), 1 deletion(-)
+
+------------------------------------------------------------------------
+r122 | s4703754 | 2023-05-16 23:44:49 +1000 (Tue, 16 May 2023) | 2 lines
+Changed paths:
+   M /trunk/a4/Makefile
+   M /trunk/a4/crackserver.c
+
+Modifed makefile to remove crackserver.h. Program can test for errors with exit status of 3 (empty dictionary file or files with invalid words) now. Did this by finshing off parse_dictionary_file() which is where the error checks for status 3 happen. 
+
+
+Index: Makefile
+ Makefile |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+Index: crackserver.c
+ crackserver.c |   70 +++++++++++++++++++++++++++++++++++++++++++++++++---------
+ 1 file changed, 60 insertions(+), 10 deletions(-)
+
+------------------------------------------------------------------------
+r123 | s4703754 | 2023-05-17 16:44:27 +1000 (Wed, 17 May 2023) | 2 lines
+Changed paths:
+   M /trunk/a4/crackclient.c
+
+Reconfigured crackclient.c when writing and reading from server as reading from file bug was fixed. Removed the thread and just used FILE* in input_output_server and read_server().
+
+
+Index: crackclient.c
+ crackclient.c |   34 +++++++++++++++++-----------------
+ 1 file changed, 17 insertions(+), 17 deletions(-)
+
+------------------------------------------------------------------------
+r124 | s4703754 | 2023-05-17 19:06:40 +1000 (Wed, 17 May 2023) | 2 lines
+Changed paths:
+   M /trunk/a4/crackclient.c
+   M /trunk/a4/crackserver.c
+
+Established structure to set up connection for server. Created established connection() and connection_error() to deal with any erros when connecting. 
+
+
+Index: crackclient.c
+ crackclient.c |    4 +---
+ 1 file changed, 1 insertion(+), 3 deletions(-)
+Index: crackserver.c
+ crackserver.c |   68 ++++++++++++++++++++++++++++++++++++++++++++++++++++------
+ 1 file changed, 62 insertions(+), 6 deletions(-)
+
+------------------------------------------------------------------------
+r125 | s4703754 | 2023-05-18 00:23:02 +1000 (Thu, 18 May 2023) | 2 lines
+Changed paths:
+   M /trunk/a4/crackclient.c
+
+Fixed input_output_server() to not process empty lines or lines that begin with a '#'. 
+
+
+Index: crackclient.c
+ crackclient.c |    5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
+
+------------------------------------------------------------------------
+r126 | s4703754 | 2023-05-18 15:49:22 +1000 (Thu, 18 May 2023) | 2 lines
+Changed paths:
+   M /trunk/a4/crackserver.c
+
+Copied structure of setting up connections between client and server and made modifications to fit program. These included get_listenfd(), process_connection() and client_thread(). client_thread still needs to be modified. 
+
+
+Index: crackserver.c
+ crackserver.c |  119 +++++++++++++++++++++++++++++++++++++++++++++-------------
+ 1 file changed, 94 insertions(+), 25 deletions(-)
+
+------------------------------------------------------------------------
+r127 | s4703754 | 2023-05-18 18:02:36 +1000 (Thu, 18 May 2023) | 2 lines
+Changed paths:
+   M /trunk/a4/crackserver.c
+
+Modified client_thread so that I'm working with FILE* instead of fds. Also implemented a function called process_input_client() which will handle the input from client in the socket. Can handle the case where the first command is not "crack" or "crypt". 
+
+
+Index: crackserver.c
+ crackserver.c |   60 +++++++++++++++++++++++++++++++++++++++++-----------------
+ 1 file changed, 43 insertions(+), 17 deletions(-)
+
+------------------------------------------------------------------------
+r128 | s4703754 | 2023-05-19 13:21:42 +1000 (Fri, 19 May 2023) | 2 lines
+Changed paths:
+   M /trunk/a4/crackserver.c
+
+Changed process client input to process_client_input() to check_valid_input_client. Continued to implment checks for input from client. Created a function called check_crypt_input to handle crypt commands from client. 
+
+
+Index: crackserver.c
+ crackserver.c |   86 ++++++++++++++++++++++++++++++++++++++++++++--------------
+ 1 file changed, 66 insertions(+), 20 deletions(-)
+
+------------------------------------------------------------------------
+r129 | s4703754 | 2023-05-19 14:59:44 +1000 (Fri, 19 May 2023) | 2 lines
+Changed paths:
+   M /trunk/a4/Makefile
+   M /trunk/a4/crackserver.c
+
+Modified Makefile to include the crypt.h lib. Also created a check_crack_input() to handle when crack appears on the command line. Now I can start handling threading and crypting.
+
+
+Index: Makefile
+ Makefile |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+Index: crackserver.c
+ crackserver.c |   52 +++++++++++++++++++++++++++++++++++++++++++++++-----
+ 1 file changed, 47 insertions(+), 5 deletions(-)
+
+------------------------------------------------------------------------
+r130 | s4703754 | 2023-05-20 21:06:27 +1000 (Sat, 20 May 2023) | 2 lines
+Changed paths:
+   M /trunk/a4/crackserver.c
+
+Crackserver can now encrypt input from server. This was done by adding more implementation in client_thread(). Also created a function called enccrypt_data to handle the encryption of data sent.
+
+
+Index: crackserver.c
+ crackserver.c |   43 +++++++++++++++++++++++++++++++++++--------
+ 1 file changed, 35 insertions(+), 8 deletions(-)
+
+------------------------------------------------------------------------
+r131 | s4703754 | 2023-05-22 00:39:21 +1000 (Mon, 22 May 2023) | 2 lines
+Changed paths:
+   M /trunk/a4/Makefile
+   M /trunk/a4/crackserver.c
+
+Modified Makfile so i can debug with GDB. Added a function called decrypt_data() which will be the point where threads are created to filter the dictionary.
+
+
+Index: Makefile
+ Makefile |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+Index: crackserver.c
+ crackserver.c |   38 +++++++++++++++++++++++++-------------
+ 1 file changed, 25 insertions(+), 13 deletions(-)
+
+------------------------------------------------------------------------
+r132 | s4703754 | 2023-05-22 16:51:06 +1000 (Mon, 22 May 2023) | 2 lines
+Changed paths:
+   M /trunk/a4/crackserver.c
+
+Finished the function decrypt_data(). Now it can handle cracking with one thread. Also create a decrypt_cipher() which is the function the threads will use to solve the problem. 
+
+
+Index: crackserver.c
+ crackserver.c |   90 +++++++++++++++++++++++++++++++++++++++++++---------------
+ 1 file changed, 68 insertions(+), 22 deletions(-)
+
+------------------------------------------------------------------------
+r133 | s4703754 | 2023-05-22 20:19:14 +1000 (Mon, 22 May 2023) | 2 lines
+Changed paths:
+   M /trunk/a4/crackserver.c
+
+Added some inline comments and some functionality in decrypt_data() and decrypt_cipher(). Added a new starting index variable into the wordchecker struct to help keep track on where the last thread searched the dictionary.
+
+
+Index: crackserver.c
+ crackserver.c |   52 ++++++++++++++++++++++++++++++++++++++--------------
+ 1 file changed, 38 insertions(+), 14 deletions(-)
+
+------------------------------------------------------------------------
+r134 | s4703754 | 2023-05-23 17:22:34 +1000 (Tue, 23 May 2023) | 2 lines
+Changed paths:
+   M /trunk/a4/crackclient.c
+   M /trunk/a4/crackserver.c
+
+Modified error codes in client as I forgot a : when crack client was unable to connect to ports. I removed words allocateds in wordChecker and introduced a index starting point and ending point. Fixed logic in decrypt data so the correct index of words are allocated.(Multi threads work now). Also did semaphores for limiting client connection in process_connections() and client_thread().  
+
+
+Index: crackclient.c
+ crackclient.c |    3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
+Index: crackserver.c
+ crackserver.c |   74 ++++++++++++++++++++++++++++++++--------------------------
+ 1 file changed, 41 insertions(+), 33 deletions(-)
+
+------------------------------------------------------------------------
+r135 | s4703754 | 2023-05-23 20:12:01 +1000 (Tue, 23 May 2023) | 2 lines
+Changed paths:
+   M /trunk/a4/crackserver.c
+
+Removed a free statement in client_thread() as it was causing bug. Also added an if statement in decrypt_data() to check if num threads requested is more than num words in dictionary. 
+
+
+Index: crackserver.c
+ crackserver.c |   35 ++++++++++++-----------------------
+ 1 file changed, 12 insertions(+), 23 deletions(-)
+
+------------------------------------------------------------------------
+r136 | s4703754 | 2023-05-23 23:29:10 +1000 (Tue, 23 May 2023) | 2 lines
+Changed paths:
+   M /trunk/a4/crackclient.c
+   M /trunk/a4/crackserver.c
+
+Fixed all of indentation and spacing erros in crackclient.c and crackserver.c. Added inline function comments to functions in crackserver.c. Finished doc strings for crackclient.c.
+
+
+Index: crackclient.c
+ crackclient.c |  120 ++++++++++++++++++++++++++++++++++++++++++++++++++++++----
+ 1 file changed, 112 insertions(+), 8 deletions(-)
+Index: crackserver.c
+ crackserver.c |  216 ++++++++++++++++++++++++++++++++++++++++++++++------------
+ 1 file changed, 175 insertions(+), 41 deletions(-)
+
+------------------------------------------------------------------------
+r137 | s4703754 | 2023-05-24 01:18:28 +1000 (Wed, 24 May 2023) | 2 lines
+Changed paths:
+   M /trunk/a4/crackclient.c
+   M /trunk/a4/crackserver.c
+
+Added inline function comments to both c files. Added comments to all global constants in crackserver.c. Cleaned up logic in decrypt_data(). 
+
+
+Index: crackclient.c
+ crackclient.c |    5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
+Index: crackserver.c
+ crackserver.c |   98 ++++++++++++++++++++++++++++++++++++++--------------------
+ 1 file changed, 65 insertions(+), 33 deletions(-)
+
+------------------------------------------------------------------------
+r138 | s4703754 | 2023-05-24 15:39:55 +1000 (Wed, 24 May 2023) | 2 lines
+Changed paths:
+   M /trunk/a4/crackclient.c
+   M /trunk/a4/crackserver.c
+
+Modified last style error in crackclient.c and also fixed up indentations/ spacing errors in crackserver.c. Also added some function comments to some functions in crackserver.c. Also added a new struct to handle statistics in the server. 
+
+
+Index: crackclient.c
+ crackclient.c |    1 +
+ 1 file changed, 1 insertion(+)
+Index: crackserver.c
+ crackserver.c |   94 +++++++++++++++++++++++++++++++++++++++++++++++++++++-----
+ 1 file changed, 86 insertions(+), 8 deletions(-)
+
+------------------------------------------------------------------------
+r139 | s4703754 | 2023-05-25 00:15:07 +1000 (Thu, 25 May 2023) | 2 lines
+Changed paths:
+   M /trunk/a4/crackserver.c
+
+Added a new struct called Statistics to handle the stats of the current server. Also created a function init_statistics to populate the variables of the malloc'ed struct. Create a pthread_sigmask in main and created a thread to handle signals and print the appropriate messages when a SIGHUP is sent.  
+
+
+Index: crackserver.c
+ crackserver.c |  152 ++++++++++++++++++++++++++++++++++++++++++++--------------
+ 1 file changed, 116 insertions(+), 36 deletions(-)
+
+------------------------------------------------------------------------
+r140 | s4703754 | 2023-05-25 00:39:18 +1000 (Thu, 25 May 2023) | 2 lines
+Changed paths:
+   M /trunk/a4/crackserver.c
+
+Added more function comments functions in crackserver.c. Fixed logic in signal_handle, to handle multiple signals of SIGHUP.
+
+
+Index: crackserver.c
+ crackserver.c |   78 ++++++++++++++++++++++++++++++++++++++++++----------------
+ 1 file changed, 57 insertions(+), 21 deletions(-)
+
+------------------------------------------------------------------------
+r141 | s4703754 | 2023-05-25 10:24:37 +1000 (Thu, 25 May 2023) | 2 lines
+Changed paths:
+   M /trunk/a4/crackserver.c
+
+Added more functionality into client_thread to deal with stats for completed clients. Also added more code into process_connections() which increments a counter with mutex when a new client is connected. 
+
+
+Index: crackserver.c
+ crackserver.c |   11 +++++++++++
+ 1 file changed, 11 insertions(+)
+
+------------------------------------------------------------------------
+r142 | s4703754 | 2023-05-25 16:11:04 +1000 (Thu, 25 May 2023) | 2 lines
+Changed paths:
+   M /trunk/a4/crackserver.c
+
+Finished up the stats implementation when specific commands are called. These include: client_thread(), check_valid_input_client(), encrypt_data(), decrypt_data() and decrypt_cipher().  
+
+
+Index: crackserver.c
+ crackserver.c |   49 ++++++++++++++++++++++++++++++++++++++++---------
+ 1 file changed, 40 insertions(+), 9 deletions(-)
+
+------------------------------------------------------------------------
+r143 | s4703754 | 2023-05-25 18:41:22 +1000 (Thu, 25 May 2023) | 2 lines
+Changed paths:
+   M /trunk/a4/crackclient.c
+   M /trunk/a4/crackserver.c
+
+Fix up some styling erros in crackclient.c. Also finished function comments for crackserver.c
+
+
+Index: crackclient.c
+ crackclient.c |    1 -
+ 1 file changed, 1 deletion(-)
+Index: crackserver.c
+ crackserver.c |  103 ++++++++++++++++++++++++++++++++++++++++++++++++++--------
+ 1 file changed, 89 insertions(+), 14 deletions(-)
+
+------------------------------------------------------------------------
+r144 | s4703754 | 2023-05-26 13:07:20 +1000 (Fri, 26 May 2023) | 2 lines
+Changed paths:
+   M /trunk/a4/crackserver.c
+
+Just added volatile key word to a found varaible in WordChecker. This tells other threads to exit when encrypted string has been decrypted.
+
+
+Index: crackserver.c
+ crackserver.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+------------------------------------------------------------------------
+r145 | s4703754 | 2023-05-26 13:33:07 +1000 (Fri, 26 May 2023) | 2 lines
+Changed paths:
+   M /trunk/a4/crackserver.c
+
+Decided to malloc word checker in decrypt_data so all threads refer to same variables. Only difference will be starting points and ending points in dictionary. Also added some function comments into crackserver.c
+
+
+Index: crackserver.c
+ crackserver.c |   15 +++++++++------
+ 1 file changed, 9 insertions(+), 6 deletions(-)
+
+------------------------------------------------------------------------

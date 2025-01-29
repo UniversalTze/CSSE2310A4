@@ -1,0 +1,6 @@
+crackclient.c
+crackserver.c
+Makefile
+subversion_log.txt
+.revision
+.username
