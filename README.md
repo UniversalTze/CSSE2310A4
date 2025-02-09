@@ -51,3 +51,37 @@ Crackserver is a networked, multithreaded password cracking server, allowing cli
 Your crackserver program is to accept command line arguments as follows: **./crackserver [--maxconn connections] [--port portnum] [--dictionary filename]**
 Program accepts up to three optional arguments (with associated values) – (any order). The connections argument, if specified, indicates the maximum number of simultaneous client connections to be permitted. If this is zero or missing, then there is no limit to how many clients may connect (be reasoanble). The portnum argument, if specified, indicates which localhost port crackserver is to listen on. If the port number is absent or zero, then crackserver is to use an ephemeral port. The dictionary filename argument, if specified, indicates the path to a plain text file containing one word or string per line, which represents the dictionary that crackserver will search when attempting to crack passwords. If not specified, crackserver shall use the system dictionary file /usr/share/dict/words.
 ### Behaviour: 
+The crackserver program is to operate as follows: 
+- If the program receives an invalid command line then it must print the message: <br>
+Usage: **crackserver [--maxconn connections] [--port portnum] [--dictionary filename]** to stderr, and exit with an exit status of 1.<br>   
+More Invalid command lines include:
+    - any of --maxconn, --port or --dict does not have an associated value argument.
+    - the maximum connections argument (if present) is not a non-negative integer.
+    - the port number argument (if present) is not an integer value, or is an integer value and is not either 169 zero, or in the range of 1024 to 65535 inclusive.
+    - any of the arguments is specified more than once.
+    - any additional arguments are supplied.
+- If the dictionary filename argument refers to a file that does not exist or cannot be opened for reading, crackserver shall emit the following error message to stderr and terminate with exit status 2: <br>
+     **crackserver: unable to open dictionary file "filename"** <br>
+where filename is replaced by the name of the dictionary file provided on the command line. Note that 175 the double quote characters must be present.
+    - The dictionary words must be read into memory. Lines in the dictionary are terminated by newline characters (except possibly the last line) and each line (excluding that newline character) is considered to be a word.
+    - Any words longer than 8 characters should be discarded, i.e. not saved into memory, as  the crypt() family of functions only considers at most 8 characters of any supplied plain text. The order of words must be preserved. It is possible the dictionary may contain duplicate words and these should be preserved also. You may assume that words in the dictionary are no longer than 50 characters.
+    - Your crackserver must read the dictionary only once.
+- If the dictionary contains no words that are 8 characters long or shorter, then crackserver shall emit the following error message to stderr and terminate with exit status 3:
+     **crackserver: no plain text words to test**
+- If portnum is missing or zero, then crackserver shall attempt to open an ephemeral localhost port for listening. Otherwise, it shall attempt to open the specified port number. If crackserver is unable to listen on either the ephemeral or specified port, it shall emit the following message to stderr and terminate with exit status 4:
+     **crackserver: unable to open socket for listening**
+- Once the port is opened for listening, crackserver shall print to stderr the port number followed by a single newline character and then flush the output. In the case of ephemeral ports, the actual port number obtained shall be printed, not zero.
+-  Upon receiving an incoming client connection on the port, crackserver shall spawn a new thread to handle that clienT.
+- If specified (and implemented), crackserver must keep track of how many active client connections exist, and must not let that number exceed the connections parameter.
+- Note that all error messages above must be terminated by a single newline character.
+- Note that your crackserver must be able to deal with any clients using the correct communication protocol, not just crackclient. Testing with netcat is highly recommended.
+#### Client Handling Threads
+- A client handler thread is spawned for each incoming connection. This client thread must then wait for commands from the client, one per line, over the socket. The exact format of the requests is described in the Communication protocol section below.
+- As each client sends crack requests to crackserver, it the client thread shall spawn threads to perform the brute-force password cracking action against the dictionary. The number of cracking threads spawned per crack request will be specified as part of the request. Even if only one cracking thread is requested, the client thread must spawn an additional thread to do the cracking.
+- crypt requests from the client must be handled directly in the client handling thread if you wish – it is not computationally expensive and there is no need to spawn an additional thread for this operation.
+- Due to the simultaneous nature of the multiple client connections, your crackserver will need to ensure mutual exclusion around any shared data structure(s) to ensure that these do not get corrupted. Once the client disconnects or there is a communication error on the socket then the client handler thread is to close the connection, clean up and terminate. Other client threads and the crackserver program itself must continue uninterrupted.
+#### Password Cracking Algorithm
+
+{Insert photo here} 
+
+#### 
