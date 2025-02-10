@@ -82,6 +82,48 @@ where filename is replaced by the name of the dictionary file provided on the co
 - Due to the simultaneous nature of the multiple client connections, your crackserver will need to ensure mutual exclusion around any shared data structure(s) to ensure that these do not get corrupted. Once the client disconnects or there is a communication error on the socket then the client handler thread is to close the connection, clean up and terminate. Other client threads and the crackserver program itself must continue uninterrupted.
 #### Password Cracking Algorithm
 
-{Insert photo here} 
+**{Insert photo here}**
 
-#### 
+#### SIGHUP Handling 
+Upon receiving SIGHUP, crackserver is to emit (and flush) to stderr statistics reflecting the program’s operation to-date, specifically
+- Total number of clients connected (at this instant)
+- The total number of clients that have connected and disconnected since program start
+- The total number of crack requests received (since program start), including invalid requests • The total number of valid but unsuccessful crack requests completed (since program start) • The total number of valid but successful crack requests completed (since program start)
+- The total number of crypt requests received (since program start), including invalid requests
+- The total number of calls to crypt() and/or crypt_r() (since program start) – including for both crack and crypt requests. This count does not have to be updated on a call-by-call basis as this may impact performance. It must be updated before any response to a crypt or crack request is sent.
+
+All crypt requests should be counted, including those that are invalid e.g. due to an invalid salt string. The required format is illustrated below. Each of the six lines is terminated by a single newline. All numbers will fit in a 32-bit unsigned integer, i.e. you do not have to consider numbers larger 270 than 4,294,967,295.
+**{Insert picture heer}**
+
+#### Client Connection Handling
+If the connections feature is implemented and a non-zero command line argument is provided, then crackserver must not permit more than that number of simultaneous client connections to the server. crackserver shall maintain a connected client count, and if a client beyond that limit attempts to connect, it shall block, in-definitely if required, until another client leaves and this new client’s connection request can be accepted. Clients in this waiting state are not to be counted in statistics reporting – they are only counted once they have properly connected. 
+
+#### Program Output 
+- Other than error messages, the listening port number, and SIGHUP-initiated statistics output, crackserver is not to emit any output to stdout or stderr.
+
+### Communication Protocol
+Messages from client to server are space delimited. Messages from server to client are colon delimited. Note that the angle brackets <foo> are used to represent placeholders, and are not part of the command syntax.
+- Supported messages from crackclient to crackserver are:
+  - crack **\"<ciphertext\> \<crackthreads\>"** – the client is requesting the string **\<ciphertext\>** be cracked, using the specified number of threads. 
+  - IMPORTANT: even if you do not implement multi-threaded parallel password cracking functionality, your crackserver must still accept and parse/validate the <crackthreads> field - it will simply be ignored during the cracking process.
+  - crypt **\<string> <salt\>** – the client is requesting the server to encrypt the supplied **\<string\>** using the specified **\<salt\>**.
+
+Single spaces are used as separators between fields, which implies that **\<ciphertext\>** and **\<string\>** fields must not contain spaces.
+Supported messages from crackserver to crackclient are: 
+- :invalid – sent by the server to a client if the server receives an invalid command from that client (see 335 below) 336
+- :failed – sent by the server to a client if the server is unable to crack the supplied ciphertext 337
+- **\<plaintext\>** – if the server is able to decrypt the ciphertext, then the decrypted plaintext is sent back on a single line.
+- **\<ciphertext\>** – the ciphertext result of a crypt operation is sent back on a single line
+
+
+**Invalid** commands that might be received by crackserver from a client include:
+- Invalid command word – an empty string or a command word which is not crack or crypt.
+- empty strings (for any field) 
+– ciphertext not exactly 13 characters in length (including the two salt characters at the beginning)
+– missing or invalid integer for the **\<threads\>** argument. The number of threads requested must be greater than or equal to 1, and less than or equal to 50.
+- Invalid salt string provided for the crypt command (e.g. not two characters or uses invalid characters)
+- Invalid salt substring in the ciphertext for the crack command. Too few or too many arguments.
+- Any other kind of malformed message.
+
+### Provided Libraries
+{Insert photo here}
