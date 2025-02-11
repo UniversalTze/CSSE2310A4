@@ -80,9 +80,9 @@ where filename is replaced by the name of the dictionary file provided on the co
 - As each client sends crack requests to crackserver, it the client thread shall spawn threads to perform the brute-force password cracking action against the dictionary. The number of cracking threads spawned per crack request will be specified as part of the request. Even if only one cracking thread is requested, the client thread must spawn an additional thread to do the cracking.
 - crypt requests from the client must be handled directly in the client handling thread if you wish – it is not computationally expensive and there is no need to spawn an additional thread for this operation.
 - Due to the simultaneous nature of the multiple client connections, your crackserver will need to ensure mutual exclusion around any shared data structure(s) to ensure that these do not get corrupted. Once the client disconnects or there is a communication error on the socket then the client handler thread is to close the connection, clean up and terminate. Other client threads and the crackserver program itself must continue uninterrupted.
-#### Password Cracking Algorithm
 
-**{Insert photo here}**
+
+![Photo1](https://github.com/UniversalTze/CSSE2310A4/blob/main/photos/PasswordCracking.png)
 
 #### SIGHUP Handling 
 Upon receiving SIGHUP, crackserver is to emit (and flush) to stderr statistics reflecting the program’s operation to-date, specifically
@@ -93,7 +93,9 @@ Upon receiving SIGHUP, crackserver is to emit (and flush) to stderr statistics r
 - The total number of calls to crypt() and/or crypt_r() (since program start) – including for both crack and crypt requests. This count does not have to be updated on a call-by-call basis as this may impact performance. It must be updated before any response to a crypt or crack request is sent.
 
 All crypt requests should be counted, including those that are invalid e.g. due to an invalid salt string. The required format is illustrated below. Each of the six lines is terminated by a single newline. All numbers will fit in a 32-bit unsigned integer, i.e. you do not have to consider numbers larger 270 than 4,294,967,295.
-**{Insert picture heer}**
+
+
+![Photo2](https://github.com/UniversalTze/CSSE2310A4/blob/main/photos/SIGHUPEg.png)
 
 #### Client Connection Handling
 If the connections feature is implemented and a non-zero command line argument is provided, then crackserver must not permit more than that number of simultaneous client connections to the server. crackserver shall maintain a connected client count, and if a client beyond that limit attempts to connect, it shall block, in-definitely if required, until another client leaves and this new client’s connection request can be accepted. Clients in this waiting state are not to be counted in statistics reporting – they are only counted once they have properly connected. 
@@ -125,5 +127,10 @@ Supported messages from crackserver to crackclient are:
 - Invalid salt substring in the ciphertext for the crack command. Too few or too many arguments.
 - Any other kind of malformed message.
 
-### Provided Libraries
-{Insert photo here}
+### Example
+![Photo4](https://github.com/UniversalTze/CSSE2310A4/blob/main/photos/Example1.png)
+![Photo5](https://github.com/UniversalTze/CSSE2310A4/blob/main/photos/Example2.png)
+
+![Photo3](https://github.com/UniversalTze/CSSE2310A4/blob/main/photos/ProvidedLibs.png)
+
+
